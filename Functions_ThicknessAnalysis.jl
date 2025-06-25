@@ -70,11 +70,11 @@ function maskImage(img);
     mask = aimg.== idx;
     
     labelled = label_components(mask);
-    areas = component_lengths(labelled);
-    areas = areas[2:end];
+    areas = component_lengths(labelled); # areas[0] is the background
+    areas = areas[1:end];
     selected = findfirst(areas.==maximum(areas));
     radius = 0.25*sqrt(areas[selected])/2;
-    center = round.(Int,component_centroids(labelled)[selected+1]);
+    center = round.(Int,component_centroids(labelled)[selected]);
     mask .= false;
     for i in 1:size(mask,1), j in 1:size(mask,2)
         distance = sqrt((i-center[1])^2 + (j-center[2])^2);
