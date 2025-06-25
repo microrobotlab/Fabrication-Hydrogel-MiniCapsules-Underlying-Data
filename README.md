@@ -20,7 +20,44 @@ This repository contains the **Underlying data** of the brief report _"Fabricati
 ### Content of `images`
 
 All images are acquired using a Hirox microscope (model: HRX-01) and saved as `.jpg` files.
+# _Fabrication of hydrogel mini-capsules as carrier systems_ &ndash; Underlying data
+
+This repository contains the **Underlying data** of the brief report _"Fabrication of hydrogel mini-capsules as carrier systems"_ by Roberti _et al._ published in **Open Research Europe** (DOI of latest version: [10.12688/openreseurope.16723.2](https://doi.org/10.12688/openreseurope.16723.2)).
+
+
+## Data description
+
+`Underlying data`  
+&emsp;&#9492;`images\`: set of images used for the data analysis reported in the paper  
+&emsp;&emsp;&#9492;`...`  
+&emsp;&#9492;`data\`: dimensions measurements acquired with the microscope software from the images  
+&emsp;&emsp;&#9492;`microscopy_measurements.csv`  
+&emsp;&#9492;`results\`: outputs from the data analysis  
+&emsp;&emsp;&#9492;`...`  
+&emsp;&#9492;`Functions_ThicknessAnalysis.jl`: collections of functions for the data analysis  
+&emsp;&#9492;`Software_ThicknessAnalysis.jl`: main script for reproducing the data analysis  
+&emsp;&#9492;`Manifest.toml` and `Project.toml`: computational environment files    
+
+
+### Content of `images`
+
+All images are acquired using a Hirox microscope (model: HRX-01) and saved as `.jpg` files.
 Magnification, objective, camera settings and light conditions used are reported in the legend on the images.
+Each image represents one bead.
+The file names indicate the CaCl&#8322; concentration (mM) at which the bead has been prepared and the sample number.
+
+
+### Content of `data`
+
+The `microscopy_measurements.csv` file contains the dimensions measurements acquired from the images in `images` with the microscope software.
+
+Description of column headers:
+* `NAME`: sample/image name
+* `CaCl2`: CaCl&#8322; concentration (mM)
+* `h_mis`: measured shell thickness (&mu;m) &mdash; empty if microscopy measurement was not possible
+* `RCore`: measured core radius (&mu;m)
+
+### Computational analysis
 Each image represents one bead.
 The file names indicate the CaCl&#8322; concentration (mM) at which the bead has been prepared and the sample number.
 
