@@ -3,7 +3,7 @@
 include("Functions_ThicknessAnalysis.jl");
 
 ## Read the data file and save it to a dataframe
-path_to_file = "data.csv";
+path_to_file = joinpath("data","microscopy_measurements.csv");
 df = CSV.read(path_to_file, DataFrame, types=[String,Float64,Float64,Float64]);
 
 ## Add the 'linearized' thickness to the dataframe
@@ -12,13 +12,19 @@ df[!,:Ym] = linearize.(df[!,:h_mis],df[!,:Rcore]);
 ## Fit of the linearized thickness to the [CaCl2]
 α, R² = slopefit(df[!,:CaCl2],df[!,:Ym]);
 
+## Output folder
+output_folder = "results";
+if !isdir(output_folder)
+    mkpath(output_folder);
+end
 
 ## LinearFit plot
 P_LinFit = scatter(df[!,:CaCl2],df[!,:Ym], label="linearized data",legend=:bottomright,framestyle=:box);
 plot!(df[!,:CaCl2],α*df[!,:CaCl2], label="linear fit, R² = $(round(R², digits=2))");
 xlabel!("[CaCl₂] (mM)");
-ylabel!(L"\left(h/R_c+1\right)^3-1")
+ylabel!(L"\left(h/R_c+1\right)^3-1");
 display(P_LinFit)
+savefig(P_LinFit, joinpath(output_folder,"LinearFitPlot.svg"));
 
 ## Extimation of shell thickness from [CaCl2] and Rcore
 df[!,:h_CaCl2] = expected_h.([α],df[!,:Rcore],df[!,:CaCl2]);
@@ -27,15 +33,29 @@ df[!,:h_CaCl2] = expected_h.([α],df[!,:Rcore],df[!,:CaCl2]);
 P_NLPlot = scatter(df[!,:CaCl2],df[!,:h_mis], label="measured",legend=:bottomright,framestyle=:box, linewidth=10);
 scatter!(df[!,:CaCl2],df[!,:h_CaCl2], shape=:xcross, label="predicted");
 xlabel!("[CaCl₂] (mM)");
-ylabel!("Shell thickness, "*L"h"*" (μm)")
+ylabel!("Shell thickness, "*L"h"*" (μm)");
 display(P_NLPlot)
+savefig(P_NLPlot, joinpath(output_folder,"NonLinearPlot.svg"));
 
 ## Get names of images to be analysed
-imgDir = "images\\";
+imgDir = "images";
 imgNames = (df[!,:NAME]);
 
 ## Analyse images and save results in dataframe
-results = color_means.(imgDir.*df[!,:NAME].*".jpg");
+results = color_means.(joinpath.(Ref(imgDir),df[!,:NAME].*".jpg"));
+# results = [];
+# for imgName in imgNames
+#     println("Processing image: $imgName");
+#     img_path = joinpath(imgDir, imgName * ".jpg");
+#     if isfile(img_path)
+#         result = color_means(img_path);
+#         push!(results, result);
+#     else
+#         @warn "Image file not found: $img_path";
+#         push!(results, (nothing, nothing, (0.0, 0.0, 0.0)));
+#     end
+# end
+
 color_diff_names = ("R","Rbg","RB");
 for i in eachindex(color_diff_names)
     df[!,color_diff_names[i]*"Mean"] = [result[3][i] for result in results];
@@ -46,7 +66,8 @@ selected = [7,18,38];
 sel_img = [results[i][1] for i in selected];
 sel_img_filt = [results[i][2] for i in selected];
 
-mosaic(sel_img...,sel_img_filt...; fillvalue=1, rowmajor=true, npad=50, nrow=2)
+SelImgs = mosaic(sel_img...,sel_img_filt...; fillvalue=1, rowmajor=true, npad=50, nrow=2)
+save(joinpath(output_folder, "SelectedImages.png"), SelImgs);
 
 
 ## Plot color differences means of analysed images
@@ -56,6 +77,7 @@ scatter!(df[!,:CaCl2],df[!,:RBMean], label="Red - Blue", color=1);
 xlabel!("[CaCl₂] (mM)");
 ylabel!("Color Intensity (a.u.)")
 display(P_ImgPlt)
+savefig(P_ImgPlt, joinpath(output_folder,"ColorMeansPlot.svg"));
 
 ## Means of Means
 # Group dataframe by values in categorical column
@@ -76,8 +98,9 @@ end
 P_RBL = scatter(df[!,:h_CaCl2],df[!,:RBMean],grid=nothing, label="data",legend=:bottomright,framestyle=:box,left_margin = 5mm);
 plot!(MeanDF[!,:h_CaCl2],MeanDF[!,:RBMeans_mean],marker=true,linestyle=:dot,yerror=MeanDF[!,:RBMeans_std], label="μ ± σ");
 xlabel!(L"Theoretical shell thickness, $h_\textrm{CaCl_2}$ (μm)");
-ylabel!(L"R$-$B color intensity (a.u.)")
+ylabel!(L"R$-$B color intensity (a.u.)");
 display(P_RBL)
+savefig(P_RBL, joinpath(output_folder,"RBMeansPlot.svg"));
 
 ## Fit R-B values to measured thicknesses
 lfit, lfit_R² = linearfit(Float64.(df[!,:RBMean]),df[!,:h_mis])
@@ -89,14 +112,20 @@ P_ColThick = scatter(df[!,:RBMean],df[!,:h_mis],marker=true,label="data",legend=
 plot!(df[!,:RBMean],df[!,:h_RB], label="Linear fit, R²="*string(round(lfit_R², digits=2)));
 scatter!(df[!,:RBMean],df[!,:h_RB],label=L"h_\textrm{R-B}",marker=:cross,color=2);
 xlabel!(L"Color Intensity R$-$B (a.u.)");
-ylabel!(L"Shell thickness, $h$ (μm)")
+ylabel!(L"Shell thickness, $h$ (μm)");
 display(P_ColThick)
+savefig(P_ColThick, joinpath(output_folder,"ColorThicknessPlot.svg"));
 
-## Comparison between two extimations
-P_TwoExt = scatter(df[!,:CaCl2],norm_h_Rc.(df[!,:h_mis],df[!,:Rcore]),color=1,label=L"h_\textrm{meas}/R_c",legend=:bottomright,grid=nothing,framestyle=:box,left_margin = 5mm);
+## Comparison between two estimations
+P_TwoEst = scatter(df[!,:CaCl2],norm_h_Rc.(df[!,:h_mis],df[!,:Rcore]),color=1,label=L"h_\textrm{meas}/R_c",legend=:bottomright,grid=nothing,framestyle=:box,left_margin = 5mm);
 plot!(MeanDF[!,:CaCl2],norm_h_Rc.(MeanDF[!,:h_CaCl2],MeanDF[!,:Rcore]),label=L"h_\textrm{CaCl_2}/R_c",color=3);
 plot!(MeanDF[!,:CaCl2],norm_h_Rc.(MeanDF[!,:h_RB],MeanDF[!,:Rcore]),marker=:cross,linestyle=:dot,label=L"h_\textrm{R-B}/R_c",color=2);
 ylims!(0,0.8);
 xlabel!("[CaCl₂] (mM)");
-ylabel!(L"h/R_c")
-display(P_TwoExt)
+ylabel!(L"h/R_c");
+display(P_TwoEst)
+savefig(P_TwoEst, joinpath(output_folder,"TwoEstimationsPlot.svg"));
+
+## Save the dataframe with results
+CSV.write(joinpath(output_folder,"microscopy_measurements_results.csv"), df);
+CSV.write(joinpath(output_folder,"microscopy_measurements_means.csv"), MeanDF);
