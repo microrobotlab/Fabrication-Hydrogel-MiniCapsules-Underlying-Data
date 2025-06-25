@@ -5,6 +5,15 @@ include("Functions_ThicknessAnalysis.jl");
 ## Read the data file and save it to a dataframe
 path_to_file = joinpath("data","microscopy_measurements.csv");
 df = CSV.read(path_to_file, DataFrame, types=[String,Float64,Float64,Float64]);
+h_RCore = histogram(df[!,:Rcore], bins=900:50:1600, xlabel="Core radius (μm)", ylabel="Counts", framestyle=:box, legend=false, xlims=(0,2000));
+display(h_RCore);
+savefig(h_RCore, joinpath("results","RcoreHistogram.svg"));
+## Calculate overall PDI as variance/mean²
+pdi(mean::Float64, std::Float64) = std^2/mean^2;
+pdi(x::AbstractVector) = pdi(mean(x),std(x));
+PDI = pdi(df[!,:Rcore]);
+PDI < 0.1 ? println("Cores are monodisperse: PDI = ", PDI) :
+    println("Cores are not monodisperse: PDI = ", PDI);
 
 ## Add the 'linearized' thickness to the dataframe
 df[!,:Ym] = linearize.(df[!,:h_mis],df[!,:Rcore]);   
@@ -43,19 +52,6 @@ imgNames = (df[!,:NAME]);
 
 ## Analyse images and save results in dataframe
 results = color_means.(joinpath.(Ref(imgDir),df[!,:NAME].*".jpg"));
-# results = [];
-# for imgName in imgNames
-#     println("Processing image: $imgName");
-#     img_path = joinpath(imgDir, imgName * ".jpg");
-#     if isfile(img_path)
-#         result = color_means(img_path);
-#         push!(results, result);
-#     else
-#         @warn "Image file not found: $img_path";
-#         push!(results, (nothing, nothing, (0.0, 0.0, 0.0)));
-#     end
-# end
-
 color_diff_names = ("R","Rbg","RB");
 for i in eachindex(color_diff_names)
     df[!,color_diff_names[i]*"Mean"] = [result[3][i] for result in results];
@@ -85,6 +81,13 @@ gdf = groupby(df,:CaCl2,sort=true);
 # Create DF for Means
 MeanDF=DataFrame(CaCl2=sort(unique(df[!,:CaCl2])));
 MeanDF[!,:Rcore] = mean.([gdfi[!,:Rcore] for gdfi in gdf]);
+# Calculate PDI as variance/mean²
+MeanDF[!,:PDI_RCore] = pdi.([gdfi[!,:Rcore] for gdfi in gdf]);
+for r in eachrow(MeanDF)
+    r.PDI_RCore < 0.1 ? println("Cores for [CaCl₂] = $(r.CaCl2) mM are monodisperse: PDI = $(r.PDI_RCore)") :
+    println("Cores for [CaCl₂] = $(r.CaCl2) mM are not monodisperse: PDI = $(r.PDI_RCore)");
+end
+# Calculate expected shell thickness from [CaCl2] and Rcore
 MeanDF[!,:h_CaCl2] = expected_h.(α,MeanDF[!,:Rcore],MeanDF[!,:CaCl2]);
 # Calculate means and standard deviations
 functions = (mean,std);
@@ -92,7 +95,7 @@ for cd_name in color_diff_names
     for f in functions
         MeanDF[!,cd_name.*"Means_".*string(f)] = f.([gdfi[!,cd_name.*"Mean"] for gdfi in gdf]);
     end
-end 
+end
 
 ## Plot R-B Means vs expected shell thickness
 P_RBL = scatter(df[!,:h_CaCl2],df[!,:RBMean],grid=nothing, label="data",legend=:bottomright,framestyle=:box,left_margin = 5mm);
