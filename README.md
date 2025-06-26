@@ -22,6 +22,7 @@ This repository contains the **Underlying data** of the brief report _"Fabricati
 All images are acquired using a Hirox microscope (model: HRX-01) and saved as `.jpg` files.
 Magnification, objective, camera settings and light conditions used are reported in the legend on the images.
 Each image represents one bead.
+
 The file names indicate the CaCl&#8322; concentration (mM) at which the bead has been prepared and the sample number.
 
 
@@ -36,16 +37,6 @@ Description of column headers:
 * `RCore`: measured core radius (&mu;m)
 
 
-### Content of `data`
-
-The `microscopy_measurements.csv` file contains the dimensions measurements acquired from the images in `images` with the microscope software.
-
-Description of column headers:
-* `NAME`: sample/image name
-* `CaCl2`: CaCl&#8322; concentration (mM)
-* `h_mis`: measured shell thickness (&mu;m) &mdash; empty if microscopy measurement was not possible
-* `RCore`: measured core radius (&mu;m)
-
 ### Computational analysis
 
 The two files `Software_ThicknessAnalysis.jl` and `Functions_ThicknessAnalysis.jl` are the scripts used for analyzing the data described above.
@@ -53,6 +44,18 @@ The former script uses the functions defined in the latter.
 
 The analysis is performed in the [Julia language](https://julialang.org/), v1.10.
 Once the correct version of Julia is installed, the computational environment including all specific dependencies can be exactly reproduced thanks to the `Manifest.toml` and `Project.toml` files.
+
+#### Instruction for reproducing the analysis
+
+1. Install Julia (see [https://julialang.org/install/](https://julialang.org/install/)): the specific version 1.10 can be installed via `juliaup`
+2. Clone repository locally
+3. Start the Julia REPL with Julia 1.10 from the local repository directory
+4. Enter the Julia package manager by typing `]`
+5. Reproduce the computational environment by the command `instantiate`: all required dependencies will be automatically downloaded and installed, and the environment will be built
+6. Exit the package manager by `Ctrl+C` or backspace &#9003;
+7. Run the `Software_ThicknessAnalysis.jl` script
+
+For more details see [Working with Environment: Using someone else's project](https://pkgdocs.julialang.org/v1/environments/#Using-someone-else's-project).
 
 
 ### Content of `results`
