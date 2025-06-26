@@ -35,10 +35,6 @@ Description of column headers:
 * `h_mis`: measured shell thickness (&mu;m) &mdash; empty if microscopy measurement was not possible
 * `RCore`: measured core radius (&mu;m)
 
-### Computational analysis
-Each image represents one bead.
-The file names indicate the CaCl&#8322; concentration (mM) at which the bead has been prepared and the sample number.
-
 
 ### Content of `data`
 
@@ -57,6 +53,7 @@ The former script uses the functions defined in the latter.
 
 The analysis is performed in the [Julia language](https://julialang.org/), v1.10.
 Once the correct version of Julia is installed, the computational environment including all specific dependencies can be exactly reproduced thanks to the `Manifest.toml` and `Project.toml` files.
+
 
 ### Content of `results`
 
