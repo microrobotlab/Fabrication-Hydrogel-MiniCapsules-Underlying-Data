@@ -14,7 +14,8 @@ This repository contains the **Underlying data** of the brief report _"Fabricati
 &emsp;&emsp;&#9492;`...`  
 &emsp;&#9492;`Functions_ThicknessAnalysis.jl`: collections of functions for the data analysis  
 &emsp;&#9492;`Software_ThicknessAnalysis.jl`: main script for reproducing the data analysis  
-&emsp;&#9492;`Manifest.toml` and `Project.toml`: computational environment files    
+&emsp;&#9492;`Manifest.toml` and `Project.toml`: computational environment files  
+&emsp;&#9492;`_init_.jl`: utility script for reproducing the computational environment  
 
 
 ### Content of `images`
@@ -43,17 +44,15 @@ The two files `Software_ThicknessAnalysis.jl` and `Functions_ThicknessAnalysis.j
 The former script uses the functions defined in the latter.
 
 The analysis is performed in the [Julia language](https://julialang.org/), v1.10.
-Once the correct version of Julia is installed, the computational environment including all specific dependencies can be exactly reproduced thanks to the `Manifest.toml` and `Project.toml` files.
+Once the correct version of Julia is installed, the computational environment including all specific dependencies can be exactly reproduced thanks to the utility script `_init_.jl` and the `Manifest.toml` and `Project.toml` files.
 
 #### Instruction for reproducing the analysis
 
 1. Install Julia (see [https://julialang.org/install/](https://julialang.org/install/)): the specific version 1.10 can be installed via `juliaup`
-2. Clone repository locally
+2. Clone the repository locally
 3. Start the Julia REPL with Julia 1.10 from the local repository directory
-4. Enter the Julia package manager by typing `]`
-5. Reproduce the computational environment by the command `instantiate`: all required dependencies will be automatically downloaded and installed, and the environment will be built
-6. Exit the package manager by `Ctrl+C` or backspace &#9003;
-7. Run the `Software_ThicknessAnalysis.jl` script
+4. Run the utility script `_init_.jl`
+5. Run the `Software_ThicknessAnalysis.jl` script
 
 For more details see [Working with Environment: Using someone else's project](https://pkgdocs.julialang.org/v1/environments/#Using-someone-else's-project).
 

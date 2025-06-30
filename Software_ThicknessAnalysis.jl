@@ -1,3 +1,5 @@
+# ! Please run _init_.jl to initialize the computing environment !
+# ---
 
 ## Include functions for Thickness Analysis
 include("Functions_ThicknessAnalysis.jl");
