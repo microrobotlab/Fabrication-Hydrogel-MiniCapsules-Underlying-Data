@@ -1,6 +1,6 @@
 # _Fabrication of hydrogel mini-capsules as carrier systems_ &ndash; Underlying data
 
-This repository contains the **Underlying data** of the brief report _"Fabrication of hydrogel mini-capsules as carrier systems"_ by Roberti _et al._ published in **Open Research Europe** (DOI of latest version: [10.12688/openreseurope.16723.2](https://doi.org/10.12688/openreseurope.16723.2)).
+This repository contains the **Underlying data** of the brief report _"Fabrication of hydrogel mini-capsules as carrier systems"_ by Roberti _et al._ published in **Open Research Europe** (DOI of current version: [10.12688/openreseurope.16723.3](https://doi.org/10.12688/openreseurope.16723.3)).
 
 
 ## Data description
@@ -12,7 +12,7 @@ This repository contains the **Underlying data** of the brief report _"Fabricati
 &emsp;&emsp;&#9492;`microscopy_measurements.csv`  
 &emsp;&#9492;`results\`: outputs from the data analysis  
 &emsp;&emsp;&#9492;`...`  
-&emsp;&#9492;`Functions_ThicknessAnalysis.jl`: collections of functions for the data analysis  
+&emsp;&#9492;`Functions_ThicknessAnalysis.jl`: collection of functions for the data analysis  
 &emsp;&#9492;`Software_ThicknessAnalysis.jl`: main script for reproducing the data analysis  
 &emsp;&#9492;`Manifest.toml` and `Project.toml`: computational environment files  
 &emsp;&#9492;`_init_.jl`: utility script for reproducing the computational environment  
